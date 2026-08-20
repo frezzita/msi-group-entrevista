@@ -83,7 +83,7 @@ El listado del punto 4 también está como JSON en `/api/reservas?fecha=YYYY-MM-
 - **Duración fija de 2 horas** por reserva.
 - **Anticipación mínima de 15 minutos** respecto del horario pedido.
 - **La ubicación la asigna el sistema**, probando las zonas en orden A → B → C → D y
-  quedándose con la primera que tenga lugar.
+  quedándose con la primera que tenga lugar. Acá va a depender cómo esté seteado el config de reservas. Ahora tiene como default que busque una mesa que coincida con los comensales exactamente mirando por zona y sino encuentra sí la que mesa que tenga menos desperdicio de lugares.
 - **Unión de hasta 3 mesas** dentro de la misma ubicación cuando ninguna mesa sola
   alcanza.
 - **Caché de la disponibilidad por ubicación**, invalidada al confirmar una reserva.
@@ -131,27 +131,31 @@ por qué; el detalle técnico completo está en [STACK.md](STACK.md).
    Con este criterio una mesa sola siempre le gana a una unión, no se sienta a 2 personas
    en la mesa de 10, y el resultado es determinístico (los tests son reproducibles).
 
-7. **Entre ubicaciones gana la primera con lugar, aunque desperdicie asientos.** Es la
-   lectura literal de *"la ubicación la debe definir el sistema (por orden)"*. Tiene un
-   costo medible: si A sólo tiene libre una mesa de 4 y B una de 2, un grupo de 2 ocupa
-   la de 4, y el grupo de 4 que llega después termina en una mesa de 6 — 4 asientos
-   desperdiciados en dos reservas, contra 0 si el de 2 hubiera ido a B.
+7. **Entre ubicaciones se prefiere la que no desperdicia asientos.** El enunciado dice
+   que *"la ubicación la debe definir el sistema (por orden)"*, pero no define qué hacer
+   cuando la primera zona con lugar sólo puede ofrecer una mesa más grande de la
+   necesaria y una zona posterior tiene una exacta.
 
-   Se implementó la alternativa como estrategia configurable
-   (`config/reservas.php → estrategia_asignacion`, o la variable de entorno
-   `RESERVAS_ESTRATEGIA_ASIGNACION`):
+   El costo de la lectura literal es medible y encadenado: si A sólo tiene libre una mesa
+   de 4 y B una de 2, un grupo de 2 ocupa la de 4, y el grupo de 4 que llega después
+   termina en una mesa de 6 — **4 asientos desperdiciados en dos reservas, contra 0** si
+   el grupo de 2 hubiera ido a B.
+
+   Por eso el comportamiento por defecto recorre las ubicaciones **en orden** buscando
+   una que no desperdicie asientos, y sólo si ninguna puede vuelve a la primera que tenía
+   lugar (que es exactamente la respuesta de la lectura literal). Las dos estrategias
+   están implementadas y se cambian por configuración
+   (`config/reservas.php → estrategia_asignacion`, o `RESERVAS_ESTRATEGIA_ASIGNACION`):
 
    | Valor | Comportamiento |
    |---|---|
-   | `orden_estricto` *(default)* | Gana la primera ubicación con lugar |
-   | `ajuste_exacto_primero` | Se recorren las ubicaciones en orden buscando una que no desperdicie asientos; si ninguna puede, se vuelve a la primera que tenía lugar |
+   | `ajuste_exacto_primero` *(default)* | Se prefiere la ubicación que no desperdicia asientos, recorriendo en orden |
+   | `orden_estricto` | Gana la primera ubicación con lugar, sin mirar las siguientes |
 
-   El default es la lectura literal del enunciado. La razón para no invertirlo: el
-   modelo no representa el costo de **abrir una zona**, y en un local real cada zona
-   abierta necesita personal propio — mandar a dos personas solas a la terraza para
-   ahorrar dos asientos puede salir más caro que el desperdicio que evita. `EstrategiaAsignacion`
-   documenta las dos y `EstrategiaAsignacionTest` mide el desperdicio de cada una sobre
-   el mismo escenario.
+   El argumento a favor de `orden_estricto` está en el código y no se descartó por
+   capricho: el modelo no representa el costo de **abrir una zona**, y en un local real
+   cada zona abierta necesita personal propio. `EstrategiaAsignacionTest` mide el
+   desperdicio de ambas sobre el mismo escenario.
 
 8. **Todas las mesas de una ubicación se consideran combinables.** El enunciado no da
    ninguna noción de posición o layout, así que no hay forma de determinar adyacencia

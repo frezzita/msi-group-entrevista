@@ -103,6 +103,9 @@ it('con ajuste exacto primero el mismo escenario no desperdicia nada', function 
         ->and($cuatroPersonas->ubicacion->nombre)->toBe('A');
 })->group('comparacion');
 
-it('el default del proyecto es el orden estricto del enunciado', function () {
-    expect(config('reservas.estrategia_asignacion'))->toBe(EstrategiaAsignacion::OrdenEstricto->value);
+it('el proyecto se entrega priorizando el ajuste exacto', function () {
+    // El enunciado dice "por orden" pero no define que hacer cuando la primera zona con
+    // lugar solo puede ofrecer una mesa mas grande de la necesaria. Se opto por no
+    // desperdiciar asientos; orden_estricto queda disponible por configuracion.
+    expect(config('reservas.estrategia_asignacion'))->toBe(EstrategiaAsignacion::AjusteExactoPrimero->value);
 });

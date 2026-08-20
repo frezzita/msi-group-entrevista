@@ -76,6 +76,8 @@ it('ve las reservas que otra conexion acaba de commitear', function () {
     // Un request nuevo, en otra conexion, no puede reusar esas mesas.
     $reserva = $this->service->crear($this->user, CarbonImmutable::parse(MARTES), '21:00', 2);
 
-    expect($reserva->ubicacion->nombre)->toBe('B')
+    // Lo que importa no es en que zona cae, sino que no reuse mesas que la otra
+    // conexion ya ocupo: si no viera ese commit, volveria a asignar las de A.
+    expect($reserva->ubicacion->nombre)->not->toBe('A')
         ->and($reserva->mesas->pluck('id')->intersect($ocupante->mesas->pluck('id')))->toBeEmpty();
 });

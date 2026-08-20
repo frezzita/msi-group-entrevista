@@ -91,10 +91,14 @@ it('deja el numero libre despues de una baja', function () {
 });
 
 it('saca de la asignacion a las mesas dadas de baja', function () {
-    // se dan de baja las mesas de A: una reserva de 2 personas ya no puede caer ahi
-    Mesa::whereIn('numero', [1, 2, 3])->get()->each->delete();
+    // se dan de baja las tres mesas de A: una reserva ya no puede caer ahi
+    $dadasDeBaja = Mesa::whereIn('numero', [1, 2, 3])->get();
+    $dadasDeBaja->each->delete();
 
     $reserva = app(ReservaService::class)->crear($this->user, CarbonImmutable::parse(MARTES), '20:00', 2);
 
-    expect($reserva->ubicacion->nombre)->toBe('B');
+    // No se fija una ubicacion concreta: cual gana depende de la estrategia de
+    // asignacion configurada, y lo que este test cubre es la exclusion de las bajas.
+    expect($reserva->ubicacion->nombre)->not->toBe('A')
+        ->and($reserva->mesas->pluck('id')->intersect($dadasDeBaja->pluck('id')))->toBeEmpty();
 });

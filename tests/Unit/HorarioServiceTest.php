@@ -86,3 +86,46 @@ it('acepta una reserva pedida justo con la anticipacion minima', function () {
 
     expect($this->horarios->resolver(CarbonImmutable::parse(MARTES), '20:00')->inicio->format('H:i'))->toBe('20:00');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Dia de servicio en curso
+|--------------------------------------------------------------------------
+|
+| No siempre es la fecha de hoy: la ventana del sabado llega hasta las 02:00 del
+| domingo, asi que a la 01:00 de un domingo el servicio activo sigue siendo el del
+| sabado. De esto depende que la pantalla de estado muestre la ocupacion correcta
+| a la madrugada.
+*/
+
+it('durante la ventana del dia, el servicio en curso es el de hoy', function () {
+    $this->travelTo(CarbonImmutable::parse(MARTES.' 20:00'));
+
+    expect($this->horarios->fechaDeServicioActual()->toDateString())->toBe(MARTES);
+});
+
+it('a la madrugada del domingo el servicio en curso todavia es el del sabado', function () {
+    $this->travelTo(CarbonImmutable::parse(DOMINGO.' 01:00'));
+
+    expect($this->horarios->fechaDeServicioActual()->toDateString())->toBe(SABADO);
+});
+
+it('pasado el cierre del sabado, el servicio en curso ya es el del domingo', function () {
+    // la ventana del sabado cierra a las 02:00
+    $this->travelTo(CarbonImmutable::parse(DOMINGO.' 03:00'));
+
+    expect($this->horarios->fechaDeServicioActual()->toDateString())->toBe(DOMINGO);
+});
+
+it('antes de abrir, el servicio en curso es el de hoy si la noche anterior ya cerro', function () {
+    // sabado 21:00: falta una hora para abrir, y la ventana del viernes cerro a medianoche
+    $this->travelTo(CarbonImmutable::parse(SABADO.' 21:00'));
+
+    expect($this->horarios->fechaDeServicioActual()->toDateString())->toBe(SABADO);
+});
+
+it('a la manana temprano de un dia de semana el servicio en curso es el de ese dia', function () {
+    $this->travelTo(CarbonImmutable::parse(MARTES.' 08:00'));
+
+    expect($this->horarios->fechaDeServicioActual()->toDateString())->toBe(MARTES);
+});

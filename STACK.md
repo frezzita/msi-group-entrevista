@@ -145,10 +145,15 @@ encadenadas:
 No es solo la primera reserva la que sale peor: quemar la mesa de 4 en un grupo de 2
 empuja al grupo siguiente a una mesa todavia mas grande.
 
-**Aun asi el default es `orden_estricto`**, por dos razones. Es la lectura literal del
-enunciado; y el modelo no representa el costo de **abrir una zona**, que en un local real
-es el recurso caro — cada zona abierta necesita personal propio. Llevado al extremo, el
-ajuste global manda a dos personas solas a la terraza vacia para ahorrar dos asientos.
+**El default es `ajuste_exacto_primero`**: se prioriza no desperdiciar asientos. La
+lectura literal del enunciado queda disponible como `orden_estricto`.
+
+El argumento en contra, que no se descarta por capricho: el modelo no representa el costo
+de **abrir una zona**, que en un local real es el recurso caro — cada zona abierta
+necesita personal propio. Llevado al extremo, el ajuste global manda a dos personas solas
+a la terraza vacia para ahorrar dos asientos. Si el local prefiere concentrar comensales
+en las primeras zonas, se cambia una linea de configuracion y el comportamiento vuelve a
+ser el del orden estricto, con sus tests correspondientes ya escritos.
 
 Las dos estan implementadas en `EstrategiaAsignacion` y se cambian por configuracion.
 `elegirUbicacion()` recorre las ubicaciones una sola vez y corta apenas una ofrece un
@@ -227,11 +232,15 @@ de 50.
 
 ## Changelog
 
-- **2026-08-20 — Estrategia de asignacion configurable.** Se detecto que el orden
-  estricto entre ubicaciones desperdicia asientos de forma encadenada (un grupo chico
-  ocupa la mesa grande y empuja al siguiente). Se agrego `ajuste_exacto_primero` como
-  alternativa, manteniendo `orden_estricto` como default por ser la lectura literal del
-  enunciado y por el costo no modelado de abrir una zona.
+- **2026-08-20 — Estrategia de asignacion configurable, con ajuste exacto por default.**
+  Se detecto que el orden estricto entre ubicaciones desperdicia asientos de forma
+  encadenada (un grupo chico ocupa la mesa grande y empuja al siguiente a una todavia mas
+  grande). Se implementaron las dos estrategias y se dejo `ajuste_exacto_primero` como
+  default: la eficiencia de asientos es medible y el costo de abrir una zona no esta
+  modelado. `orden_estricto` queda a una linea de configuracion.
+- **2026-08-20 — Higiene del repositorio.** Se dejaron de versionar las vistas Blade
+  compiladas y los caches de `bootstrap/cache`: se habian colado al armar el proyecto
+  porque los `.gitignore` internos de `storage/` y `bootstrap/cache` no se copiaron.
 - **2026-08-20 — Confiar en el reverse proxy.** `trustProxies` para que las URLs
   generadas respeten el esquema https detras de un proxy que termina TLS.
 - **2026-08-20 — Proyecto inicial.** Laravel 13 sin starter kit ni build step, modelo de
