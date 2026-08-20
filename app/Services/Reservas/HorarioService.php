@@ -45,6 +45,27 @@ class HorarioService
         );
     }
 
+    /**
+     * Dia de servicio en curso.
+     *
+     * No siempre es la fecha de hoy: a la 01:00 de un domingo el servicio activo
+     * todavia es el del sabado, porque su ventana llega hasta las 02:00.
+     */
+    public function fechaDeServicioActual(): CarbonImmutable
+    {
+        $hoy = CarbonImmutable::today();
+
+        if (now() < VentanaServicio::paraFechaDeServicio($hoy)->apertura) {
+            $ayer = $hoy->subDay();
+
+            if (now() < VentanaServicio::paraFechaDeServicio($ayer)->cierre) {
+                return $ayer;
+            }
+        }
+
+        return $hoy;
+    }
+
     /** Horarios que ofrece el formulario para una fecha de servicio dada. */
     public function horariosDisponibles(CarbonInterface $fechaServicio): array
     {

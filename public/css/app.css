@@ -1,0 +1,142 @@
+:root {
+    --fondo: #f6f5f3;
+    --panel: #ffffff;
+    --tinta: #23201d;
+    --tinta-suave: #6f6862;
+    --borde: #e3ded8;
+    --acento: #8c2f26;
+    --acento-suave: #f5eae8;
+    --ok: #2c6e49;
+    --ok-suave: #e7f2ec;
+    --error: #a12a1f;
+    --error-suave: #fbeceb;
+    --radio: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--tinta);
+    font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+a { color: var(--acento); }
+
+.barra {
+    background: var(--panel);
+    border-bottom: 1px solid var(--borde);
+    padding: 0 24px;
+}
+
+.barra-interior {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    height: 60px;
+}
+
+.marca {
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    font-size: 14px;
+    color: var(--acento);
+    text-decoration: none;
+}
+
+.barra nav { display: flex; gap: 20px; flex: 1; }
+
+.barra nav a {
+    color: var(--tinta-suave);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+}
+
+.barra nav a:hover { color: var(--tinta); }
+.barra nav a.activo { color: var(--tinta); border-bottom-color: var(--acento); }
+
+.contenido { max-width: 1080px; margin: 32px auto 64px; padding: 0 24px; }
+
+h1 { font-size: 24px; margin: 0 0 4px; font-weight: 650; }
+h2 { font-size: 17px; margin: 0 0 12px; font-weight: 600; }
+.subtitulo { color: var(--tinta-suave); margin: 0 0 24px; }
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 20px 22px;
+    margin-bottom: 20px;
+}
+
+.panel > h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.panel > h2 .etiqueta { font-weight: 400; font-size: 13px; color: var(--tinta-suave); }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--borde); }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--tinta-suave); font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+td.numerico, th.numerico { text-align: right; font-variant-numeric: tabular-nums; }
+
+form.en-linea { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.campo { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.campo label { font-size: 13px; font-weight: 600; color: var(--tinta-suave); }
+
+input, select, button {
+    font: inherit;
+    padding: 8px 11px;
+    border: 1px solid var(--borde);
+    border-radius: 7px;
+    background: var(--panel);
+    color: var(--tinta);
+}
+
+input:focus, select:focus { outline: 2px solid var(--acento-suave); border-color: var(--acento); }
+
+button, .boton {
+    background: var(--acento);
+    border-color: var(--acento);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+}
+
+button:hover { filter: brightness(1.08); }
+button.secundario, .boton.secundario { background: var(--panel); color: var(--tinta); border-color: var(--borde); }
+button.peligro { background: var(--panel); color: var(--error); border-color: var(--borde); }
+button.chico, .boton.chico { padding: 5px 9px; font-size: 13px; }
+
+.aviso { padding: 11px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 14px; }
+.aviso.ok { background: var(--ok-suave); color: var(--ok); }
+.aviso.error { background: var(--error-suave); color: var(--error); }
+.error-campo { color: var(--error); font-size: 13px; }
+
+.pildora { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.pildora.libre { background: var(--ok-suave); color: var(--ok); }
+.pildora.ocupada { background: var(--error-suave); color: var(--error); }
+
+.grilla-mesas { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.mesa-estado {
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+    padding: 10px 14px;
+    min-width: 92px;
+    background: var(--fondo);
+}
+
+.mesa-estado.ocupada { border-color: #e9c6c2; background: var(--error-suave); }
+.mesa-estado .numero { font-weight: 700; font-size: 15px; }
+.mesa-estado .detalle { font-size: 12px; color: var(--tinta-suave); }
+
+.centrado { max-width: 380px; margin: 72px auto; }
+.vacio { color: var(--tinta-suave); font-style: italic; padding: 6px 0; }
+.pie-nota { color: var(--tinta-suave); font-size: 13px; margin-top: 6px; }
