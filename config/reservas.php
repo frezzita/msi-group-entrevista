@@ -48,7 +48,7 @@ return [
     |
     */
 
-    'estrategia_asignacion' => env('RESERVAS_ESTRATEGIA_ASIGNACION', 'orden_estricto'),
+    'estrategia_asignacion' => env('RESERVAS_ESTRATEGIA_ASIGNACION', 'ajuste_exacto_primero'),
 
     /*
     |--------------------------------------------------------------------------
