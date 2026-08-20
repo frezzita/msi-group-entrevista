@@ -196,7 +196,7 @@ JOIN ubicaciones u   ON u.id = r.ubicacion_id
 JOIN secciones s     ON s.id = u.seccion_id
 JOIN mesa_reserva mr ON mr.reserva_id = r.id
 JOIN mesas m         ON m.id = mr.mesa_id
-WHERE r.fecha_servicio = ? AND r.deleted_at IS NULL
+WHERE r.fecha_servicio = '2026-08-20' AND r.deleted_at IS NULL
 GROUP BY r.id, r.starts_at, r.ends_at, r.cantidad_personas, s.nombre, u.nombre, u.orden
 ORDER BY u.orden, r.starts_at;
 ```
