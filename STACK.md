@@ -128,7 +128,40 @@ La búsqueda es O(N³) sobre las mesas libres de una ubicación (una decena): ir
 esta escala. Si el local creciera a cientos de mesas por zona habría que podar por
 capacidad antes de combinar.
 
-### 8. El punto 4 con query builder, no con Eloquent
+### 8. Orden entre ubicaciones vs. desperdicio de asientos
+
+El enunciado dice que la ubicacion la define el sistema "por orden", pero no aclara que
+hacer cuando la primera zona con lugar solo puede ofrecer una mesa mas grande de la
+necesaria y una zona posterior tiene una exacta.
+
+**El costo es medible.** Con A = {mesa de 4} y B = {mesa de 2, mesa de 6}, dos reservas
+encadenadas:
+
+| Estrategia | Grupo de 2 | Grupo de 4 | Desperdicio total |
+|---|---|---|---|
+| `orden_estricto` | A, mesa de 4 | B, mesa de 6 | **4 asientos** |
+| `ajuste_exacto_primero` | B, mesa de 2 | A, mesa de 4 | **0** |
+
+No es solo la primera reserva la que sale peor: quemar la mesa de 4 en un grupo de 2
+empuja al grupo siguiente a una mesa todavia mas grande.
+
+**Aun asi el default es `orden_estricto`**, por dos razones. Es la lectura literal del
+enunciado; y el modelo no representa el costo de **abrir una zona**, que en un local real
+es el recurso caro — cada zona abierta necesita personal propio. Llevado al extremo, el
+ajuste global manda a dos personas solas a la terraza vacia para ahorrar dos asientos.
+
+Las dos estan implementadas en `EstrategiaAsignacion` y se cambian por configuracion.
+`elegirUbicacion()` recorre las ubicaciones una sola vez y corta apenas una ofrece un
+ajuste exacto, asi que la estrategia alternativa no bloquea zonas de mas salvo cuando
+realmente necesita mirarlas. Si ninguna zona resulta exacta, devuelve la primera que
+tenia lugar: exactamente la misma respuesta que `orden_estricto`.
+
+Un detalle de la definicion de "exacto": se evalua sobre la mejor oferta de cada zona, y
+dentro de una zona sigue mandando el criterio de usar menos mesas. Una zona con una mesa
+de 6 libre y dos de 2 cuenta como no exacta para un grupo de 4, porque partir al grupo en
+dos mesas para no desperdiciar asientos seria peor experiencia que sentarlo junto.
+
+### 9. El punto 4 con query builder, no con Eloquent
 
 `Reserva::with('mesas')` son dos consultas como mínimo y acceder a las mesas por relación
 en la vista sería N+1. El join contra el pivote más `GROUP_CONCAT` devuelve cada reserva
@@ -141,7 +174,7 @@ filas ya traídas, así que no agrega consultas.
 El join contra `mesas` **no** filtra `deleted_at`: una mesa dada de baja tiene que seguir
 apareciendo en las reservas históricas que la ocuparon.
 
-### 9. Autenticación propia en lugar de un starter kit
+### 10. Autenticación propia en lugar de un starter kit
 
 Laravel Breeze dejó de recibir actualizaciones a partir de Laravel 12 y los starter kits
 oficiales actuales (React, Vue, Livewire) arrastran Vite, npm y un paso de compilación.
@@ -152,7 +185,7 @@ intentos con `RateLimiter`.
 **Beneficio colateral:** sin build step, el proyecto se levanta con `composer install`,
 `migrate --seed` y `serve`.
 
-### 10. Baja lógica de mesas con bloqueo por reservas futuras
+### 11. Baja lógica de mesas con bloqueo por reservas futuras
 
 Un `DELETE` con cascada sobre el pivote haría desaparecer mesas de reservas históricas y
 el listado del punto 4 empezaría a perder filas hacia atrás (el join es `INNER`). Una FK
@@ -163,7 +196,7 @@ Con `SoftDeletes` más el bloqueo por reservas futuras: la mesa sale del ABM y d
 de asignación, y su historial queda intacto. El índice único incluye `deleted_at`, lo que
 en MySQL significa "único entre las filas vivas" y permite reutilizar el número.
 
-### 11. Sin broadcasting
+### 12. Sin broadcasting
 
 El enunciado no pide tiempo real. Reverb implica un proceso extra (`reverb:start`),
 compilar assets y cuatro variables de entorno más; si quien evalúa no levanta el proceso,
@@ -174,7 +207,7 @@ El evento `ReservaCreada` se emite igual, después del commit. Para tiempo real 
 implementar `ShouldBroadcast` en el evento devolviendo un canal por ubicación, y en
 `estado/index.blade.php` reemplazar el `setInterval` por una suscripción de Echo.
 
-### 12. Tests contra MySQL
+### 13. Tests contra MySQL
 
 SQLite en memoria arranca sin configurar nada, pero no soporta la sintaxis de
 `GROUP_CONCAT` que usa el punto 4 ni `SELECT ... FOR UPDATE`, y no aplica
@@ -194,6 +227,13 @@ de 50.
 
 ## Changelog
 
+- **2026-08-20 — Estrategia de asignacion configurable.** Se detecto que el orden
+  estricto entre ubicaciones desperdicia asientos de forma encadenada (un grupo chico
+  ocupa la mesa grande y empuja al siguiente). Se agrego `ajuste_exacto_primero` como
+  alternativa, manteniendo `orden_estricto` como default por ser la lectura literal del
+  enunciado y por el costo no modelado de abrir una zona.
+- **2026-08-20 — Confiar en el reverse proxy.** `trustProxies` para que las URLs
+  generadas respeten el esquema https detras de un proxy que termina TLS.
 - **2026-08-20 — Proyecto inicial.** Laravel 13 sin starter kit ni build step, modelo de
   datos con día de negocio explícito, asignación de mesas con caché y transacción con
-  lock, listado del punto 4 en una consulta, 81 tests contra MySQL.
+  lock, listado del punto 4 en una consulta, 88 tests contra MySQL.

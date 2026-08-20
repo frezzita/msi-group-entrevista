@@ -131,28 +131,50 @@ por qué; el detalle técnico completo está en [STACK.md](STACK.md).
    Con este criterio una mesa sola siempre le gana a una unión, no se sienta a 2 personas
    en la mesa de 10, y el resultado es determinístico (los tests son reproducibles).
 
-7. **Todas las mesas de una ubicación se consideran combinables.** El enunciado no da
+7. **Entre ubicaciones gana la primera con lugar, aunque desperdicie asientos.** Es la
+   lectura literal de *"la ubicación la debe definir el sistema (por orden)"*. Tiene un
+   costo medible: si A sólo tiene libre una mesa de 4 y B una de 2, un grupo de 2 ocupa
+   la de 4, y el grupo de 4 que llega después termina en una mesa de 6 — 4 asientos
+   desperdiciados en dos reservas, contra 0 si el de 2 hubiera ido a B.
+
+   Se implementó la alternativa como estrategia configurable
+   (`config/reservas.php → estrategia_asignacion`, o la variable de entorno
+   `RESERVAS_ESTRATEGIA_ASIGNACION`):
+
+   | Valor | Comportamiento |
+   |---|---|
+   | `orden_estricto` *(default)* | Gana la primera ubicación con lugar |
+   | `ajuste_exacto_primero` | Se recorren las ubicaciones en orden buscando una que no desperdicie asientos; si ninguna puede, se vuelve a la primera que tenía lugar |
+
+   El default es la lectura literal del enunciado. La razón para no invertirlo: el
+   modelo no representa el costo de **abrir una zona**, y en un local real cada zona
+   abierta necesita personal propio — mandar a dos personas solas a la terraza para
+   ahorrar dos asientos puede salir más caro que el desperdicio que evita. `EstrategiaAsignacion`
+   documenta las dos y `EstrategiaAsignacionTest` mide el desperdicio de cada una sobre
+   el mismo escenario.
+
+8. **Todas las mesas de una ubicación se consideran combinables.** El enunciado no da
    ninguna noción de posición o layout, así que no hay forma de determinar adyacencia
    física. Es una simplificación consciente.
 
-8. **Un solo perfil de usuario.** No se pidieron roles. Como el punto 4 requiere ver
+9. **Un solo perfil de usuario.** No se pidieron roles. Como el punto 4 requiere ver
    *todas* las reservas del día, el usuario autenticado se modela como personal del
    local. `reservas.user_id` se guarda como trazabilidad de quién cargó la reserva, no
    como dueño. Agregar un rol cliente sería una policy sobre `Reserva` y un scope en el
    listado.
 
-9. **La baja de mesas es lógica y se bloquea si hay reservas por venir.** Un `DELETE`
+10. **La baja de mesas es lógica y se bloquea si hay reservas por venir.** Un `DELETE`
    con cascada haría desaparecer mesas de reservas históricas y el listado del punto 4
    empezaría a mentir hacia atrás. El índice único de `(ubicacion_id, numero)` incluye
    `deleted_at`, así que un número liberado se puede reutilizar.
 
-10. **Editar la capacidad de una mesa no revalida las reservas ya asignadas.** Bajar la
+11. **Editar la capacidad de una mesa no revalida las reservas ya asignadas.** Bajar la
     capacidad de una mesa no expulsa a un grupo que ya tenía lugar.
 
-11. **Zona horaria `America/Argentina/Buenos_Aires`.** Sin esto, la anticipación de 15
+12. **Zona horaria `America/Argentina/Buenos_Aires`.** Sin esto, la anticipación de 15
     minutos y la pantalla de estado quedan corridas respecto de la hora local.
 
-12. **Sin *broadcasting*.** El enunciado no pide tiempo real; sólo caché. La pantalla de
+13. **Sin *broadcasting*.** El enunciado no pide tiempo real; sólo caché. La pantalla de
     estado se refresca con polling cada 15 segundos, lo que evita depender de un proceso
     extra y de compilar assets. El evento `ReservaCreada` se emite igual y está
     documentado como punto de enganche para Reverb.

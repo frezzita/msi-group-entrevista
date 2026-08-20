@@ -34,6 +34,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Estrategia de asignacion de ubicacion
+    |--------------------------------------------------------------------------
+    |
+    | El enunciado pide que la ubicacion la defina el sistema "por orden", pero no
+    | dice que hacer si la primera zona con lugar solo puede ofrecer una mesa mas
+    | grande de la necesaria y una zona posterior tiene una exacta.
+    |
+    |   orden_estricto         gana la primera zona con lugar (lectura literal)
+    |   ajuste_exacto_primero  se prefiere la zona que no desperdicia asientos
+    |
+    | Ver EstrategiaAsignacion y la seccion de supuestos del README.
+    |
+    */
+
+    'estrategia_asignacion' => env('RESERVAS_ESTRATEGIA_ASIGNACION', 'orden_estricto'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Cache de disponibilidad
     |--------------------------------------------------------------------------
     |

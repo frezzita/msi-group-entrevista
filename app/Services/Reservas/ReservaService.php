@@ -44,16 +44,9 @@ class ReservaService
     public function asignar(User $user, Franja $franja, int $personas): Reserva
     {
         return DB::transaction(function () use ($user, $franja, $personas) {
-            foreach (Ubicacion::enOrdenDeAsignacion()->get() as $ubicacion) {
-                $combinacion = $this->asignador->resolver(
-                    $this->mesasLibresBloqueadas($ubicacion, $franja),
-                    $personas
-                );
+            [$ubicacion, $combinacion] = $this->elegirUbicacion($franja, $personas);
 
-                if ($combinacion === null) {
-                    continue; // esta zona no da: probamos la siguiente en orden
-                }
-
+            if ($ubicacion !== null) {
                 $reserva = Reserva::create([
                     'user_id' => $user->id,
                     'ubicacion_id' => $ubicacion->id,
@@ -94,6 +87,54 @@ class ReservaService
 
             DB::afterCommit(fn () => $this->disponibilidad->olvidar($fecha, $ubicacionId));
         });
+    }
+
+    /**
+     * Recorre las ubicaciones en orden y devuelve con cual se resuelve la reserva.
+     *
+     * Con OrdenEstricto gana la primera que tenga lugar. Con AjusteExactoPrimero se
+     * sigue recorriendo en orden hasta encontrar una que no desperdicie asientos, y
+     * solo si ninguna puede se vuelve a la primera que tenia lugar, que es la misma
+     * respuesta que hubiera dado OrdenEstricto.
+     *
+     * El corte anticipado importa: apenas una zona ofrece un ajuste exacto se deja de
+     * mirar (y de bloquear) las siguientes.
+     *
+     * Nota: "exacto" se evalua sobre la mejor oferta de cada zona, y dentro de una zona
+     * sigue mandando el criterio de usar menos mesas. Una zona con una mesa de 6 libre
+     * y dos de 2 se considera no exacta para un grupo de 4: partir al grupo en dos
+     * mesas para no desperdiciar asientos seria peor experiencia que sentarlo junto.
+     *
+     * @return array{0: ?Ubicacion, 1: ?CombinacionDeMesas}
+     */
+    private function elegirUbicacion(Franja $franja, int $personas): array
+    {
+        $estrategia = EstrategiaAsignacion::configurada();
+        $primeraConLugar = [null, null];
+
+        foreach (Ubicacion::enOrdenDeAsignacion()->get() as $ubicacion) {
+            $combinacion = $this->asignador->resolver(
+                $this->mesasLibresBloqueadas($ubicacion, $franja),
+                $personas
+            );
+
+            if ($combinacion === null) {
+                continue; // esta zona no da: probamos la siguiente en orden
+            }
+
+            if ($estrategia === EstrategiaAsignacion::OrdenEstricto) {
+                return [$ubicacion, $combinacion];
+            }
+
+            if ($combinacion->desperdicio($personas) === 0) {
+                return [$ubicacion, $combinacion];
+            }
+
+            $primeraConLugar[0] ??= $ubicacion;
+            $primeraConLugar[1] ??= $combinacion;
+        }
+
+        return $primeraConLugar;
     }
 
     /**
