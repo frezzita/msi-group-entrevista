@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Reserva;
 use App\Models\User;
 use App\Services\Reservas\Franja;
 use App\Services\Reservas\ReservaService;
@@ -22,6 +23,10 @@ class ReservasDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        if (Reserva::exists()) {
+            return;
+        }
+
         $service = app(ReservaService::class);
         $user = User::firstOrFail();
 

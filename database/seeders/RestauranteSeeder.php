@@ -23,6 +23,14 @@ class RestauranteSeeder extends Seeder
 {
     public function run(): void
     {
+        // Volver a correr los seeders sobre una base ya sembrada no deberia explotar
+        // con una violacion de unicidad: se avisa y se corta.
+        if (Seccion::exists()) {
+            $this->command?->warn('El local ya esta cargado. Usa migrate:fresh --seed para regenerarlo.');
+
+            return;
+        }
+
         $salon = Seccion::create(['nombre' => 'Salon']);
         $terraza = Seccion::create(['nombre' => 'Terraza']);
 
