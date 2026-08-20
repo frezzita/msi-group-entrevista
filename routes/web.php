@@ -29,7 +29,9 @@ Route::middleware('auth')->group(function () {
     // Puntos 3 y 4: alta de reserva y listado por fecha
     Route::get('/reservas', [ReservaController::class, 'index'])->name('reservas.index');
     Route::get('/reservas/nueva', [ReservaController::class, 'create'])->name('reservas.create');
-    Route::post('/reservas', [ReservaController::class, 'store'])->name('reservas.store');
+    Route::post('/reservas', [ReservaController::class, 'store'])
+        ->middleware('throttle:'.config('reservas.throttle_reservas'))
+        ->name('reservas.store');
     Route::delete('/reservas/{reserva}', [ReservaController::class, 'destroy'])->name('reservas.destroy');
 
     Route::get('/estado', [EstadoController::class, 'index'])->name('estado.index');

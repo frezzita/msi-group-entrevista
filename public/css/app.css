@@ -1,16 +1,76 @@
 :root {
-    --fondo: #f6f5f3;
-    --panel: #ffffff;
-    --tinta: #23201d;
-    --tinta-suave: #6f6862;
-    --borde: #e3ded8;
-    --acento: #8c2f26;
-    --acento-suave: #f5eae8;
-    --ok: #2c6e49;
-    --ok-suave: #e7f2ec;
-    --error: #a12a1f;
-    --error-suave: #fbeceb;
+    --fondo: #F6F7F9;
+    --panel: #FFFFFF;
+    --tinta: #1E2029;
+    --tinta-suave: #6B6F7D;
+    --borde: #E2E4E9;
+    --borde-control: #868AA0;
+    --acento: #4F46C7;
+    --acento-suave: #E7EAF9;
+    --sobre-acento: #FFFFFF;
+    --ok: #1B7A55;
+    --ok-suave: #E1F5EC;
+    --error: #C22E4A;
+    --error-suave: #FBE7EB;
+    --error-borde: #F0C4CC;
+    --sombra: 0 4px 10px rgba(30, 32, 41, .08), 0 1px 2px rgba(30, 32, 41, .06);
     --radio: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --fondo: #15161C;
+        --panel: #1E2029;
+        --tinta: #EDEEF3;
+        --tinta-suave: #9497A6;
+        --borde: #2C2F3A;
+        --borde-control: #6E7288;
+        --acento: #8B83F0;
+        --acento-suave: #282158;
+        --sobre-acento: #15161C;
+        --ok: #5FCB98;
+        --ok-suave: #173A2C;
+        --error: #F0798E;
+        --error-suave: #3B1720;
+        --error-borde: #4A2029;
+        --sombra: 0 6px 18px rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .3);
+    }
+}
+
+html[data-theme="dark"] {
+    --fondo: #15161C;
+    --panel: #1E2029;
+    --tinta: #EDEEF3;
+    --tinta-suave: #9497A6;
+    --borde: #2C2F3A;
+    --borde-control: #6E7288;
+    --acento: #8B83F0;
+    --acento-suave: #282158;
+    --sobre-acento: #15161C;
+    --ok: #5FCB98;
+    --ok-suave: #173A2C;
+    --error: #F0798E;
+    --error-suave: #3B1720;
+    --error-borde: #4A2029;
+    --sombra: 0 6px 18px rgba(0, 0, 0, .45), 0 2px 6px rgba(0, 0, 0, .3);
+}
+
+html[data-theme="light"] {
+    --fondo: #F6F7F9;
+    --panel: #FFFFFF;
+    --tinta: #1E2029;
+    --tinta-suave: #6B6F7D;
+    --borde: #E2E4E9;
+    --borde-control: #868AA0;
+    --acento: #4F46C7;
+    --acento-suave: #E7EAF9;
+    --sobre-acento: #FFFFFF;
+    --ok: #1B7A55;
+    --ok-suave: #E1F5EC;
+    --error: #C22E4A;
+    --error-suave: #FBE7EB;
+    --error-borde: #F0C4CC;
+    --sombra: 0 4px 10px rgba(30, 32, 41, .08), 0 1px 2px rgba(30, 32, 41, .06);
 }
 
 * { box-sizing: border-box; }
@@ -20,6 +80,10 @@ body {
     background: var(--fondo);
     color: var(--tinta);
     font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+h1, h2, .marca {
+    font-family: "Fraunces", Georgia, "Times New Roman", Cambria, serif;
 }
 
 a { color: var(--acento); }
@@ -41,9 +105,8 @@ a { color: var(--acento); }
 
 .marca {
     font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    font-size: 14px;
+    letter-spacing: .04em;
+    font-size: 17px;
     color: var(--acento);
     text-decoration: none;
 }
@@ -51,20 +114,65 @@ a { color: var(--acento); }
 .barra nav { display: flex; gap: 20px; flex: 1; }
 
 .barra nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
     color: var(--tinta-suave);
     text-decoration: none;
     font-weight: 500;
-    padding: 4px 0;
-    border-bottom: 2px solid transparent;
+    padding: 4px 2px;
+}
+
+.barra nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: -2px;
+    height: 2px;
+    background: var(--acento);
+    border-radius: 1px;
 }
 
 .barra nav a:hover { color: var(--tinta); }
-.barra nav a.activo { color: var(--tinta); border-bottom-color: var(--acento); }
+.barra nav a.activo { color: var(--tinta); }
+.barra nav a:hover::after, .barra nav a.activo::after { right: 0; }
+
+.barra-acciones { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+#boton-tema {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#boton-tema svg {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 16px;
+    height: 16px;
+}
+
+.icono-luna { opacity: 0; transform: rotate(-90deg) scale(.6); }
+.icono-sol { opacity: 1; transform: rotate(0deg) scale(1); }
+
+html[data-theme="dark"] .icono-sol { opacity: 0; transform: rotate(90deg) scale(.6); }
+html[data-theme="dark"] .icono-luna { opacity: 1; transform: rotate(0deg) scale(1); }
+
+@media (prefers-color-scheme: dark) {
+    html:not([data-theme]) .icono-sol { opacity: 0; transform: rotate(90deg) scale(.6); }
+    html:not([data-theme]) .icono-luna { opacity: 1; transform: rotate(0deg) scale(1); }
+}
 
 .contenido { max-width: 1080px; margin: 32px auto 64px; padding: 0 24px; }
 
-h1 { font-size: 24px; margin: 0 0 4px; font-weight: 650; }
-h2 { font-size: 17px; margin: 0 0 12px; font-weight: 600; }
+h1 { font-size: 26px; margin: 0 0 4px; font-weight: 600; }
+h2 { font-size: 18px; margin: 0 0 12px; font-weight: 600; }
 .subtitulo { color: var(--tinta-suave); margin: 0 0 24px; }
 
 .panel {
@@ -77,6 +185,8 @@ h2 { font-size: 17px; margin: 0 0 12px; font-weight: 600; }
 
 .panel > h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .panel > h2 .etiqueta { font-weight: 400; font-size: 13px; color: var(--tinta-suave); }
+
+.tabla-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--borde); }
@@ -91,7 +201,7 @@ form.en-linea { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap
 input, select, button {
     font: inherit;
     padding: 8px 11px;
-    border: 1px solid var(--borde);
+    border: 1px solid var(--borde-control);
     border-radius: 7px;
     background: var(--panel);
     color: var(--tinta);
@@ -102,16 +212,18 @@ input:focus, select:focus { outline: 2px solid var(--acento-suave); border-color
 button, .boton {
     background: var(--acento);
     border-color: var(--acento);
-    color: #fff;
+    color: var(--sobre-acento);
     cursor: pointer;
     font-weight: 600;
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 button:hover { filter: brightness(1.08); }
-button.secundario, .boton.secundario { background: var(--panel); color: var(--tinta); border-color: var(--borde); }
-button.peligro { background: var(--panel); color: var(--error); border-color: var(--borde); }
+button.secundario, .boton.secundario { background: var(--panel); color: var(--tinta); border-color: var(--borde-control); }
+button.peligro { background: var(--panel); color: var(--error); border-color: var(--borde-control); }
 button.chico, .boton.chico { padding: 5px 9px; font-size: 13px; }
 
 .aviso { padding: 11px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 14px; }
@@ -119,7 +231,7 @@ button.chico, .boton.chico { padding: 5px 9px; font-size: 13px; }
 .aviso.error { background: var(--error-suave); color: var(--error); }
 .error-campo { color: var(--error); font-size: 13px; }
 
-.pildora { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.pildora { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
 .pildora.libre { background: var(--ok-suave); color: var(--ok); }
 .pildora.ocupada { background: var(--error-suave); color: var(--error); }
 
@@ -133,10 +245,78 @@ button.chico, .boton.chico { padding: 5px 9px; font-size: 13px; }
     background: var(--fondo);
 }
 
-.mesa-estado.ocupada { border-color: #e9c6c2; background: var(--error-suave); }
+.mesa-estado.ocupada { border-color: var(--error-borde); background: var(--error-suave); }
 .mesa-estado .numero { font-weight: 700; font-size: 15px; }
 .mesa-estado .detalle { font-size: 12px; color: var(--tinta-suave); }
 
 .centrado { max-width: 380px; margin: 72px auto; }
 .vacio { color: var(--tinta-suave); font-style: italic; padding: 6px 0; }
 .pie-nota { color: var(--tinta-suave); font-size: 13px; margin-top: 6px; }
+
+.barra nav a svg,
+button svg,
+.boton svg,
+.pildora svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+}
+
+button.chico svg, .boton.chico svg { width: 13px; height: 13px; }
+
+@media (prefers-reduced-motion: no-preference) {
+    body, .barra, .panel, .mesa-estado, .pildora, .aviso, .campo label,
+    input, select, table, th, td, a, .marca {
+        transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+    }
+
+    button, .boton {
+        transition: background-color .25s ease, color .25s ease, border-color .25s ease,
+                    transform .15s ease, box-shadow .15s ease;
+    }
+
+    .icono-sol, .icono-luna { transition: opacity .3s ease, transform .3s ease; }
+
+    .barra nav a::after { transition: right .2s ease; }
+
+    button:hover, .boton:hover { transform: translateY(-1px); box-shadow: var(--sombra); }
+    button:active, .boton:active { transform: translateY(0) scale(.98); box-shadow: none; }
+
+    @keyframes aparecer-panel {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .panel { animation: aparecer-panel .4s ease both; animation-delay: calc(min(var(--i, 0), 6) * 60ms); }
+
+    @keyframes aparecer-fila {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    tbody tr { animation: aparecer-fila .3s ease both; animation-delay: calc(min(var(--i, 0), 12) * 40ms); }
+
+    @keyframes deslizar-aviso {
+        0% { opacity: 0; transform: translateY(-14px); }
+        60% { opacity: 1; transform: translateY(3px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    .aviso { animation: deslizar-aviso .45s cubic-bezier(.34, 1.56, .64, 1); }
+
+    @keyframes destello {
+        0% { box-shadow: 0 0 0 0 var(--acento-suave); transform: scale(1); }
+        35% { box-shadow: 0 0 0 6px var(--acento-suave); transform: scale(1.035); }
+        100% { box-shadow: 0 0 0 0 transparent; transform: scale(1); }
+    }
+    .mesa-estado.actualizada { animation: destello .7s ease-out; }
+}
+
+@media (max-width: 640px) {
+    .barra-interior { flex-wrap: wrap; height: auto; padding: 10px 0; gap: 10px 20px; }
+    .barra nav { flex: 1 1 100%; order: 3; gap: 16px; }
+    .contenido { padding: 0 16px; }
+
+    form.en-linea { flex-direction: column; align-items: stretch; }
+    form.en-linea .campo { width: 100%; }
+    form.en-linea .campo[style*="margin-left"] { margin-left: 0 !important; }
+
+    .centrado { margin: 32px auto; max-width: 92%; }
+}

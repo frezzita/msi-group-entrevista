@@ -22,7 +22,7 @@ class ReservaController extends Controller
         private readonly ReservasPorFechaQuery $listado,
     ) {}
 
-    /** Punto 4: listado por fecha, por ubicacion y seccion, en una sola consulta. */
+    /** Punto 4: listado por fecha, por ubicacion, en una sola consulta. */
     public function index(Request $request): View
     {
         $fecha = $this->fechaPedida($request);

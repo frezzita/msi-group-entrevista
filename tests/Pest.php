@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Mesa;
-use App\Models\Seccion;
 use App\Models\Ubicacion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,12 +31,10 @@ function usuario(): User
  */
 function crearLocal(array $zonas): void
 {
-    $seccion = Seccion::create(['nombre' => 'Salon']);
     $orden = 1;
 
     foreach ($zonas as $nombre => $mesas) {
         $ubicacion = Ubicacion::create([
-            'seccion_id' => $seccion->id,
             'nombre' => $nombre,
             'orden' => $orden++,
         ]);

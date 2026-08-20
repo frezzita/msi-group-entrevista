@@ -6,7 +6,6 @@ use Database\Factories\UbicacionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ubicacion extends Model
@@ -17,13 +16,7 @@ class Ubicacion extends Model
     // Laravel pluralizaria "Ubicacion" como "ubicacions".
     protected $table = 'ubicaciones';
 
-    protected $fillable = ['seccion_id', 'nombre', 'orden'];
-
-    /** @return BelongsTo<Seccion, $this> */
-    public function seccion(): BelongsTo
-    {
-        return $this->belongsTo(Seccion::class);
-    }
+    protected $fillable = ['nombre', 'orden'];
 
     /** @return HasMany<Mesa, $this> */
     public function mesas(): HasMany

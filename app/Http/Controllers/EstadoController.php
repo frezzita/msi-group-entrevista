@@ -34,7 +34,7 @@ class EstadoController extends Controller
         $fechaServicio = $this->horarios->fechaDeServicioActual();
         $ahora = now()->format('Y-m-d H:i:s');
 
-        $ubicaciones = Ubicacion::with(['seccion', 'mesas' => fn ($q) => $q->orderBy('numero')])
+        $ubicaciones = Ubicacion::with(['mesas' => fn ($q) => $q->orderBy('numero')])
             ->enOrdenDeAsignacion()
             ->get()
             ->map(function (Ubicacion $ubicacion) use ($fechaServicio, $ahora) {
@@ -53,7 +53,6 @@ class EstadoController extends Controller
 
                 return [
                     'ubicacion' => $ubicacion->nombre,
-                    'seccion' => $ubicacion->seccion->nombre,
                     'mesas' => $mesas->values()->all(),
                     'libres' => $mesas->where('ocupada', false)->count(),
                     'total' => $mesas->count(),

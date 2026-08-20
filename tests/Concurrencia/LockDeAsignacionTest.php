@@ -39,7 +39,7 @@ afterEach(function () {
 function limpiarBase(): void
 {
     DB::statement('SET FOREIGN_KEY_CHECKS=0');
-    foreach (['mesa_reserva', 'reservas', 'mesas', 'ubicaciones', 'secciones', 'users'] as $tabla) {
+    foreach (['mesa_reserva', 'reservas', 'mesas', 'ubicaciones', 'users'] as $tabla) {
         DB::table($tabla)->truncate();
     }
     DB::statement('SET FOREIGN_KEY_CHECKS=1');

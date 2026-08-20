@@ -19,14 +19,13 @@ function reservarPara(string $fecha, string $hora, int $personas): Reserva
     return test()->service->crear(test()->user, CarbonImmutable::parse($fecha), $hora, $personas);
 }
 
-it('lista las reservas de la fecha con su seccion, ubicacion y mesas', function () {
+it('lista las reservas de la fecha con su ubicacion y mesas', function () {
     reservarPara(MARTES, '20:00', 2); // A, mesa 1
     reservarPara(MARTES, '20:00', 6); // A, mesas 2+3 unidas (la 1 ya esta tomada)
 
     $filas = $this->query->paraFecha(MARTES);
 
     expect($filas)->toHaveCount(2)
-        ->and($filas->first()->seccion)->toBe('Salon')
         ->and($filas->first()->ubicacion)->toBe('A')
         ->and($filas->first()->mesas)->toBe('1')
         ->and($filas->last()->mesas)->toBe('2, 3')       // mesas unidas, concatenadas y ordenadas
@@ -56,7 +55,7 @@ it('agrupa por ubicacion sin consultas adicionales', function () {
 
     $grupos = $this->query->agrupadasPorUbicacion(MARTES);
 
-    expect($grupos->keys()->all())->toBe(['Salon / A', 'Salon / B']);
+    expect($grupos->keys()->all())->toBe(['A', 'B']);
 });
 
 it('incluye en el sabado la reserva que termina el domingo', function () {

@@ -57,7 +57,7 @@ código.
 php artisan test
 ```
 
-81 tests. Corren contra **MySQL** (`msi_reservas_test`), no contra SQLite: la consulta
+100 tests. Corren contra **MySQL** (`msi_reservas_test`), no contra SQLite: la consulta
 del punto 4 usa `GROUP_CONCAT(... ORDER BY ... SEPARATOR ...)`, el modo
 `ONLY_FULL_GROUP_BY` y `SELECT ... FOR UPDATE`, que en SQLite no existen o se comportan
 distinto. Testear sobre otro motor haría que los dos tests más importantes no probaran
@@ -70,7 +70,7 @@ nada real.
 | Pantalla | Qué muestra |
 |---|---|
 | **Mesas** | ABM por ubicación: alta, edición y baja con su capacidad (punto 1) |
-| **Reservas** | Alta de reserva y listado por fecha agrupado por sección y ubicación (puntos 3 y 4) |
+| **Reservas** | Alta de reserva y listado por fecha agrupado por ubicación (puntos 3 y 4) |
 | **Estado** | Ocupación del salón en este momento, refrescada sola cada 15 segundos |
 
 El listado del punto 4 también está como JSON en `/api/reservas?fecha=YYYY-MM-DD`.
@@ -95,12 +95,12 @@ El listado del punto 4 también está como JSON en `/api/reservas?fecha=YYYY-MM-
 El enunciado deja varias cosas sin definir. Estas son las decisiones que se tomaron y
 por qué; el detalle técnico completo está en [STACK.md](STACK.md).
 
-1. **Sección y ubicación son niveles distintos.** El punto 4 pide listar *"por ubicación
-   y sección"*, pero el punto 1 no le da campo `sección` a la mesa: entonces sección no
-   puede ser una subdivisión dentro de la ubicación, sólo puede agruparlas. Se modeló
-   `secciones → ubicaciones (A–D) → mesas`, y la sección **no participa** de la
-   asignación automática: es una dimensión de reporte. Si en su modelo de negocio son
-   sinónimos, se elimina con una migración y una columna del listado.
+1. **El listado del punto 4 va solo por ubicación.** El enunciado pedía originalmente
+   listar *"por ubicación y sección"*, pero la mesa nunca tuvo un campo `sección` propio
+   (solo `ubicación`, A–D), así que en una primera versión se modeló `secciones →
+   ubicaciones → mesas` como una dimensión extra de reporte. El cliente confirmó que
+   sección y ubicación son sinónimos en este negocio, así que se eliminó por completo:
+   la tabla `secciones`, el modelo y toda referencia en el listado, en Mesas y en Estado.
 
 2. **Unir mesas no descuenta asientos, por defecto.** El enunciado permite unir mesas
    pero no dice si se pierden lugares en los lados que quedan pegados. En un restaurante
@@ -189,15 +189,14 @@ por qué; el detalle técnico completo está en [STACK.md](STACK.md).
 
 ```sql
 SELECT r.id AS reserva_id, r.starts_at, r.ends_at, r.cantidad_personas,
-       s.nombre AS seccion, u.nombre AS ubicacion,
+       u.nombre AS ubicacion,
        GROUP_CONCAT(m.numero ORDER BY m.numero SEPARATOR ', ') AS mesas
 FROM reservas r
 JOIN ubicaciones u   ON u.id = r.ubicacion_id
-JOIN secciones s     ON s.id = u.seccion_id
 JOIN mesa_reserva mr ON mr.reserva_id = r.id
 JOIN mesas m         ON m.id = mr.mesa_id
-WHERE r.fecha_servicio = '2026-08-20' AND r.deleted_at IS NULL
-GROUP BY r.id, r.starts_at, r.ends_at, r.cantidad_personas, s.nombre, u.nombre, u.orden
+WHERE r.fecha_servicio = ? AND r.deleted_at IS NULL
+GROUP BY r.id, r.starts_at, r.ends_at, r.cantidad_personas, u.nombre, u.orden
 ORDER BY u.orden, r.starts_at;
 ```
 
@@ -216,8 +215,7 @@ con sus mesas ya concatenadas y ordenadas, en un único viaje a la base. El test
 +----+-------+--------+--------------------------------------------+---------+------+----------------------------------------------+
 |  1 | r     | ref    | reservas_fecha_servicio_ubicacion_id_index | 3       |    2 | Using where; Using temporary; Using filesort |
 |  1 | u     | eq_ref | PRIMARY                                    | 8       |    1 | NULL                                         |
-|  1 | s     | eq_ref | PRIMARY                                    | 8       |    1 | NULL                                         |
-|  1 | mr    | ref    | mesa_reserva_reserva_id_index              | 8       |    1 | Using index                                  |
+|  1 | mr    | ref    | mesa_reserva_reserva_id_index              | 8       |   10 | Using index                                  |
 |  1 | m     | eq_ref | PRIMARY                                    | 8       |    1 | NULL                                         |
 +----+-------+--------+--------------------------------------------+---------+------+----------------------------------------------+
 ```

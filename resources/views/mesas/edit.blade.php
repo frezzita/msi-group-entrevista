@@ -32,8 +32,18 @@
                 @error('capacidad') <span class="error-campo">{{ $message }}</span> @enderror
             </div>
 
-            <button type="submit">Guardar</button>
-            <a class="boton secundario" href="{{ route('mesas.index') }}">Cancelar</a>
+            <button type="submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="4 12 9 17 20 6"/>
+                </svg>
+                Guardar
+            </button>
+            <a class="boton secundario" href="{{ route('mesas.index') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/>
+                </svg>
+                Cancelar
+            </a>
         </form>
     </div>
 @endsection

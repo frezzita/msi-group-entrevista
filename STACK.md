@@ -173,7 +173,7 @@ en la vista sería N+1. El join contra el pivote más `GROUP_CONCAT` devuelve ca
 en una sola fila con sus mesas concatenadas, en un único viaje.
 
 **Costo:** se pierden los modelos hidratados. Para un listado de sólo lectura es un
-intercambio conveniente. El agrupado por sección y ubicación se hace en memoria sobre las
+intercambio conveniente. El agrupado por ubicación se hace en memoria sobre las
 filas ya traídas, así que no agrega consultas.
 
 El join contra `mesas` **no** filtra `deleted_at`: una mesa dada de baja tiene que seguir
@@ -232,6 +232,12 @@ de 50.
 
 ## Changelog
 
+- **2026-08-20 — Rate limit en el alta de reservas.** `POST /reservas` no tenia
+  ningun limite: un usuario autenticado podia llamarlo en bucle y acaparar los
+  locks de la zona mas pedida (cada llamada abre una transaccion con `SELECT
+  ... FOR UPDATE`). Se agrego `throttle:20,1` solo a esa ruta, configurable via
+  `RESERVAS_THROTTLE_RESERVAS` en `config/reservas.php`, mas un test que
+  verifica que la request 21 dentro del minuto devuelve 429.
 - **2026-08-20 — Estrategia de asignacion configurable, con ajuste exacto por default.**
   Se detecto que el orden estricto entre ubicaciones desperdicia asientos de forma
   encadenada (un grupo chico ocupa la mesa grande y empuja al siguiente a una todavia mas
@@ -245,4 +251,4 @@ de 50.
   generadas respeten el esquema https detras de un proxy que termina TLS.
 - **2026-08-20 — Proyecto inicial.** Laravel 13 sin starter kit ni build step, modelo de
   datos con día de negocio explícito, asignación de mesas con caché y transacción con
-  lock, listado del punto 4 en una consulta, 88 tests contra MySQL.
+  lock, listado del punto 4 en una consulta, 100 tests contra MySQL.

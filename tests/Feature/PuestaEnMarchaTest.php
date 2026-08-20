@@ -2,7 +2,6 @@
 
 use App\Models\Mesa;
 use App\Models\Reserva;
-use App\Models\Seccion;
 use App\Models\Ubicacion;
 
 /*
@@ -51,8 +50,7 @@ it('genera URLs http cuando no hay proxy delante', function () {
 it('siembra el local y las reservas de demostracion', function () {
     $this->seed();
 
-    expect(Seccion::count())->toBe(2)
-        ->and(Ubicacion::count())->toBe(4)
+    expect(Ubicacion::count())->toBe(4)
         ->and(Mesa::count())->toBe(11)
         ->and(Reserva::count())->toBeGreaterThan(0);
 });
@@ -79,8 +77,7 @@ it('se puede volver a correr sin romper ni duplicar', function () {
     $this->seed();
 
     expect(Mesa::count())->toBe($mesas)
-        ->and(Reserva::count())->toBe($reservas)
-        ->and(Seccion::count())->toBe(2);
+        ->and(Reserva::count())->toBe($reservas);
 });
 
 it('crea el usuario de prueba que documenta el README', function () {

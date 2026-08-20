@@ -16,7 +16,7 @@ it('muestra el listado del dia con las mesas de cada reserva', function () {
 
     $this->get(route('reservas.index', ['fecha' => MARTES]))
         ->assertOk()
-        ->assertSee('Salon / A')
+        ->assertSeeTextInOrder(['A', '1 reserva(s)'])
         ->assertSee('20:00 a 22:00')
         ->assertSee('1, 3'); // mesas unidas
 });
@@ -64,6 +64,16 @@ it('valida el formato de los datos del formulario', function () {
         ->assertSessionHasErrors(['fecha', 'hora', 'cantidad_personas']);
 });
 
+it('limita los POST a /reservas para evitar que se acaparen los locks de una zona', function () {
+    $payload = ['fecha' => 'ayer', 'hora' => '25:99', 'cantidad_personas' => 0]; // invalido: no llega a tomar locks
+
+    collect(range(1, 20))->each(
+        fn () => $this->post(route('reservas.store'), $payload)->assertStatus(302)
+    );
+
+    $this->post(route('reservas.store'), $payload)->assertStatus(429);
+});
+
 it('cancela una reserva desde el listado', function () {
     $reserva = $this->service->crear($this->user, CarbonImmutable::parse(MARTES), '20:00', 2);
 
@@ -81,7 +91,6 @@ it('expone el listado del punto 4 como JSON', function () {
         ->assertOk()
         ->assertJsonPath('fecha', MARTES)
         ->assertJsonPath('reservas.0.ubicacion', 'A')
-        ->assertJsonPath('reservas.0.seccion', 'Salon')
         ->assertJsonPath('reservas.0.mesas', '1, 3');
 });
 

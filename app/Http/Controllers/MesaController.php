@@ -13,7 +13,7 @@ class MesaController extends Controller
     public function index(): View
     {
         return view('mesas.index', [
-            'ubicaciones' => Ubicacion::with(['seccion', 'mesas' => fn ($q) => $q->orderBy('numero')])
+            'ubicaciones' => Ubicacion::with(['mesas' => fn ($q) => $q->orderBy('numero')])
                 ->enOrdenDeAsignacion()
                 ->get(),
         ]);

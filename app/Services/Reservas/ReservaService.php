@@ -67,7 +67,7 @@ class ReservaService
                     ReservaCreada::dispatch($reserva);
                 });
 
-                return $reserva->load(['mesas', 'ubicacion.seccion']);
+                return $reserva->load(['mesas', 'ubicacion']);
             }
 
             throw new SinDisponibilidadException(

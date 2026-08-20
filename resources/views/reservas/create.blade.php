@@ -35,8 +35,18 @@
                 @error('cantidad_personas') <span class="error-campo">{{ $message }}</span> @enderror
             </div>
 
-            <button type="submit">Reservar</button>
-            <a class="boton secundario" href="{{ route('reservas.index') }}">Volver</a>
+            <button type="submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="4 12 9 17 20 6"/>
+                </svg>
+                Reservar
+            </button>
+            <a class="boton secundario" href="{{ route('reservas.index') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Volver
+            </a>
         </form>
     </div>
 

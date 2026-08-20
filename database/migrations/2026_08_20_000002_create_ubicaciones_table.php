@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('ubicaciones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('seccion_id')->constrained('secciones')->restrictOnDelete();
             $table->string('nombre', 20)->unique();
 
             // El enunciado dice que la ubicacion la asigna el sistema "por orden".

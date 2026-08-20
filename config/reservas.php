@@ -100,4 +100,18 @@ return [
 
     'paso_grilla_minutos' => 30,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Rate limit de alta de reservas
+    |--------------------------------------------------------------------------
+    |
+    | POST /reservas toma locks sobre las mesas de la zona pedida dentro de una
+    | transaccion. Sin limite, un usuario autenticado puede llamarlo en bucle y
+    | acaparar los locks de la zona mas solicitada. Formato "intentos,minutos"
+    | tal como lo espera el middleware throttle de Laravel.
+    |
+    */
+
+    'throttle_reservas' => env('RESERVAS_THROTTLE_RESERVAS', '20,1'),
+
 ];

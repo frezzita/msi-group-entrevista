@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Punto 4: reservas de una fecha, por ubicacion y seccion, con las mesas de cada una,
+ * Punto 4: reservas de una fecha, por ubicacion, con las mesas de cada una,
  * en una sola consulta.
  *
  * Se resuelve con el query builder y no con Eloquent: `Reserva::with('mesas')` son dos
@@ -28,12 +28,11 @@ class ReservasPorFechaQuery
 
         return DB::table('reservas as r')
             ->join('ubicaciones as u', 'u.id', '=', 'r.ubicacion_id')
-            ->join('secciones as s', 's.id', '=', 'u.seccion_id')
             ->join('mesa_reserva as mr', 'mr.reserva_id', '=', 'r.id')
             ->join('mesas as m', 'm.id', '=', 'mr.mesa_id')
             ->where('r.fecha_servicio', $fecha)
             ->whereNull('r.deleted_at')
-            ->groupBy('r.id', 'r.starts_at', 'r.ends_at', 'r.cantidad_personas', 's.nombre', 'u.nombre', 'u.orden')
+            ->groupBy('r.id', 'r.starts_at', 'r.ends_at', 'r.cantidad_personas', 'u.nombre', 'u.orden')
             ->orderBy('u.orden')
             ->orderBy('r.starts_at')
             ->get([
@@ -41,7 +40,6 @@ class ReservasPorFechaQuery
                 'r.starts_at',
                 'r.ends_at',
                 'r.cantidad_personas',
-                's.nombre as seccion',
                 'u.nombre as ubicacion',
                 DB::raw("GROUP_CONCAT(m.numero ORDER BY m.numero SEPARATOR ', ') as mesas"),
             ]);
@@ -55,7 +53,7 @@ class ReservasPorFechaQuery
      */
     public function agrupadasPorUbicacion(CarbonInterface|string $fecha): Collection
     {
-        return $this->paraFecha($fecha)->groupBy(fn (object $r) => $r->seccion.' / '.$r->ubicacion);
+        return $this->paraFecha($fecha)->groupBy(fn (object $r) => $r->ubicacion);
     }
 
     /** SQL final, para documentarlo y para el EXPLAIN del README. */
@@ -63,12 +61,11 @@ class ReservasPorFechaQuery
     {
         return DB::table('reservas as r')
             ->join('ubicaciones as u', 'u.id', '=', 'r.ubicacion_id')
-            ->join('secciones as s', 's.id', '=', 'u.seccion_id')
             ->join('mesa_reserva as mr', 'mr.reserva_id', '=', 'r.id')
             ->join('mesas as m', 'm.id', '=', 'mr.mesa_id')
             ->where('r.fecha_servicio', '?')
             ->whereNull('r.deleted_at')
-            ->groupBy('r.id', 'r.starts_at', 'r.ends_at', 'r.cantidad_personas', 's.nombre', 'u.nombre', 'u.orden')
+            ->groupBy('r.id', 'r.starts_at', 'r.ends_at', 'r.cantidad_personas', 'u.nombre', 'u.orden')
             ->orderBy('u.orden')
             ->orderBy('r.starts_at')
             ->toSql();

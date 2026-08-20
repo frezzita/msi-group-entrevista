@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Mesa;
-use App\Models\Seccion;
 use App\Models\Ubicacion;
 use Illuminate\Database\Seeder;
 
@@ -25,25 +24,21 @@ class RestauranteSeeder extends Seeder
     {
         // Volver a correr los seeders sobre una base ya sembrada no deberia explotar
         // con una violacion de unicidad: se avisa y se corta.
-        if (Seccion::exists()) {
+        if (Ubicacion::exists()) {
             $this->command?->warn('El local ya esta cargado. Usa migrate:fresh --seed para regenerarlo.');
 
             return;
         }
 
-        $salon = Seccion::create(['nombre' => 'Salon']);
-        $terraza = Seccion::create(['nombre' => 'Terraza']);
-
         $layout = [
-            ['seccion' => $salon,   'nombre' => 'A', 'orden' => 1, 'mesas' => [1 => 2, 2 => 2, 3 => 4]],
-            ['seccion' => $salon,   'nombre' => 'B', 'orden' => 2, 'mesas' => [4 => 4, 5 => 4, 6 => 6]],
-            ['seccion' => $terraza, 'nombre' => 'C', 'orden' => 3, 'mesas' => [7 => 6, 8 => 8]],
-            ['seccion' => $terraza, 'nombre' => 'D', 'orden' => 4, 'mesas' => [9 => 10, 10 => 4, 11 => 2]],
+            ['nombre' => 'A', 'orden' => 1, 'mesas' => [1 => 2, 2 => 2, 3 => 4]],
+            ['nombre' => 'B', 'orden' => 2, 'mesas' => [4 => 4, 5 => 4, 6 => 6]],
+            ['nombre' => 'C', 'orden' => 3, 'mesas' => [7 => 6, 8 => 8]],
+            ['nombre' => 'D', 'orden' => 4, 'mesas' => [9 => 10, 10 => 4, 11 => 2]],
         ];
 
         foreach ($layout as $zona) {
             $ubicacion = Ubicacion::create([
-                'seccion_id' => $zona['seccion']->id,
                 'nombre' => $zona['nombre'],
                 'orden' => $zona['orden'],
             ]);
