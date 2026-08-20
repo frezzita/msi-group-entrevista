@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\MesaFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,8 +11,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Mesa extends Model
 {
-    /** @use HasFactory<\Database\Factories\MesaFactory> */
+    /** @use HasFactory<MesaFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = ['ubicacion_id', 'numero', 'capacidad'];

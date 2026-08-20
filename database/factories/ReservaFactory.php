@@ -2,11 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Reserva;
 use App\Models\Ubicacion;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 
-/** @extends Factory<\App\Models\Reserva> */
+/** @extends Factory<Reserva> */
 class ReservaFactory extends Factory
 {
     public function definition(): array
@@ -26,7 +28,7 @@ class ReservaFactory extends Factory
     /** Fija el intervalo y deriva la fecha de servicio del inicio. */
     public function entre(\DateTimeInterface $inicio, ?\DateTimeInterface $fin = null): static
     {
-        $inicio = \Illuminate\Support\Carbon::instance($inicio);
+        $inicio = Carbon::instance($inicio);
 
         return $this->state(fn () => [
             'fecha_servicio' => $inicio->toDateString(),

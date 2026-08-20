@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\ReservaCreada;
+use App\Models\Reserva;
 use App\Models\Ubicacion;
 use App\Services\Reservas\DisponibilidadService;
 use App\Services\Reservas\HorarioService;
@@ -20,7 +21,7 @@ beforeEach(function () {
     $this->claveA = DisponibilidadService::clave(MARTES, $this->zonaA->id);
 });
 
-function reservarEn(int $personas, string $hora = '20:00'): \App\Models\Reserva
+function reservarEn(int $personas, string $hora = '20:00'): Reserva
 {
     return test()->service->crear(test()->user, CarbonImmutable::parse(MARTES), $hora, $personas);
 }

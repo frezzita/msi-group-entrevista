@@ -3,9 +3,10 @@
 namespace Database\Factories;
 
 use App\Models\Seccion;
+use App\Models\Ubicacion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/** @extends Factory<\App\Models\Ubicacion> */
+/** @extends Factory<Ubicacion> */
 class UbicacionFactory extends Factory
 {
     public function definition(): array

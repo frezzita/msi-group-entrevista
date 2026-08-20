@@ -61,13 +61,13 @@ return [
     */
 
     'horarios' => [
-        Carbon::MONDAY    => ['apertura' => '10:00', 'duracion_minutos' => 840], // 10 a 24
-        Carbon::TUESDAY   => ['apertura' => '10:00', 'duracion_minutos' => 840],
+        Carbon::MONDAY => ['apertura' => '10:00', 'duracion_minutos' => 840], // 10 a 24
+        Carbon::TUESDAY => ['apertura' => '10:00', 'duracion_minutos' => 840],
         Carbon::WEDNESDAY => ['apertura' => '10:00', 'duracion_minutos' => 840],
-        Carbon::THURSDAY  => ['apertura' => '10:00', 'duracion_minutos' => 840],
-        Carbon::FRIDAY    => ['apertura' => '10:00', 'duracion_minutos' => 840],
-        Carbon::SATURDAY  => ['apertura' => '22:00', 'duracion_minutos' => 240], // 22 a 02
-        Carbon::SUNDAY    => ['apertura' => '12:00', 'duracion_minutos' => 240], // 12 a 16
+        Carbon::THURSDAY => ['apertura' => '10:00', 'duracion_minutos' => 840],
+        Carbon::FRIDAY => ['apertura' => '10:00', 'duracion_minutos' => 840],
+        Carbon::SATURDAY => ['apertura' => '22:00', 'duracion_minutos' => 240], // 22 a 02
+        Carbon::SUNDAY => ['apertura' => '12:00', 'duracion_minutos' => 240], // 12 a 16
     ],
 
     /*

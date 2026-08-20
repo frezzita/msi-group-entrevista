@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\ReservaFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +12,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reserva extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReservaFactory> */
+    /** @use HasFactory<ReservaFactory> */
     use HasFactory;
+
     use SoftDeletes;
 
     protected $fillable = [

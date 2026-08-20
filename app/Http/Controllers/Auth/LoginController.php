@@ -32,7 +32,7 @@ class LoginController extends Controller
 
         $this->verificarIntentos($request);
 
-        if (! Auth::attempt($credenciales, $request->boolean("recordarme"))) {
+        if (! Auth::attempt($credenciales, $request->boolean('recordarme'))) {
             RateLimiter::hit($this->clave($request));
 
             throw ValidationException::withMessages(['email' => __('auth.failed')]);

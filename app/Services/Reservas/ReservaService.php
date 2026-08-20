@@ -3,6 +3,7 @@
 namespace App\Services\Reservas;
 
 use App\Events\ReservaCreada;
+use App\Exceptions\ReservaNoPosibleException;
 use App\Exceptions\SinDisponibilidadException;
 use App\Models\Mesa;
 use App\Models\Reserva;
@@ -24,7 +25,7 @@ class ReservaService
     ) {}
 
     /**
-     * @throws \App\Exceptions\ReservaNoPosibleException
+     * @throws ReservaNoPosibleException
      */
     public function crear(User $user, CarbonInterface $fechaServicio, string $hora, int $personas): Reserva
     {

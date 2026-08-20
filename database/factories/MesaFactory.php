@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Mesa;
 use App\Models\Ubicacion;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/** @extends Factory<\App\Models\Mesa> */
+/** @extends Factory<Mesa> */
 class MesaFactory extends Factory
 {
     public function definition(): array

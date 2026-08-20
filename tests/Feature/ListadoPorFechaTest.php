@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Mesa;
+use App\Models\Reserva;
 use App\Queries\ReservasPorFechaQuery;
 use App\Services\Reservas\ReservaService;
 use Carbon\CarbonImmutable;
@@ -13,7 +14,7 @@ beforeEach(function () {
     $this->user = usuario();
 });
 
-function reservarPara(string $fecha, string $hora, int $personas): \App\Models\Reserva
+function reservarPara(string $fecha, string $hora, int $personas): Reserva
 {
     return test()->service->crear(test()->user, CarbonImmutable::parse($fecha), $hora, $personas);
 }
